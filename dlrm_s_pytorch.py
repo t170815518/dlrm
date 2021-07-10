@@ -975,7 +975,7 @@ def run():
     # onnx
     parser.add_argument("--save-onnx", action="store_true", default=False)
     # gpu
-    parser.add_argument("--use-gpu", action="store_true", default=False)
+    parser.add_argument("--use-gpu", action="store_true", default=True)
     # distributed
     parser.add_argument("--local_rank", type=int, default=-1)
     parser.add_argument("--dist-backend", type=str, default="")
@@ -1084,7 +1084,7 @@ def run():
 
     if args.data_generation == "dataset":
         train_data, train_ld, test_data, test_ld = dp.make_criteo_data_and_loaders(args)
-        table_feature_map = {idx: idx for idx in range(len(train_data.counts))}
+        # table_feature_map = {idx: idx for idx in range(len(train_data.counts))}
         nbatches = args.num_batches if args.num_batches > 0 else len(train_ld)
         nbatches_test = len(test_ld)
 
@@ -1447,7 +1447,7 @@ def run():
             else:
                 quantize_dtype = torch.float16
             dlrm = torch.quantization.quantize_dynamic(
-                dlrm, {torch.nn.Linear}, quantize_dtype
+                dlrm, set(torch.nn.Linear), quantize_dtype
             )
         if args.quantize_emb_with_bit != 32:
             dlrm.quantize_embedding(args.quantize_emb_with_bit)
